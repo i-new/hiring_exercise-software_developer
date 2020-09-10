@@ -17,6 +17,10 @@ public class Feed {
     @Column(unique = true)
     private String description;
 
+    public Feed() {
+
+    }
+
     public Feed(String title, String link, String pubDate, String description) {
         this.title = title;
         this.link = link;
