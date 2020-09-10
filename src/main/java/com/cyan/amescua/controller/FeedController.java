@@ -15,7 +15,7 @@ public class FeedController {
     @GetMapping(value = "/analyse/new")
     public String retrieveRSS(@RequestParam String url1, @RequestParam String url2) {
 //        use the service to make the operations and save the data in database
-        return null;
+        return "hello analyse: " + url1 + " & " + url2; // /frequency/{id}
     }
 
     @GetMapping(value = "/frequency/{id}")
