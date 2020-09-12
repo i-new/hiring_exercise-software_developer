@@ -24,6 +24,9 @@ public class FeedService {
 
     private static Integer currentFeed = 0;
 
+    private static String prepositions = "about ,above ,across ,after ,against ,among ,around ,at ,before ,behind ,below ,beside ,between ,by ,down ,during ,for ,from ,in ,inside ,into ,near ,of ,off ,on ,out ,over ,through ,to ,toward ,under ,up ,with";
+    private static String pronouns = "I ,me ,we ,us ,you ,her ,him ,it ,it's ,this ,these ,that ,those ,what ,who ,which ,whom ,whose ,my ,your ,yours ,their ,hers ,himself ,herself ,itself ,themselves ,ourselves ,yourself ,yourselves ,anybody ,anyone ,anything ,each  ,either ,everybody ,everyone ,everything ,neither ,nobody ,no one ,nothing ,one ,somebody ,someone ,something ,both ,few ,many ,several ,all ,any ,most ,none ,some ,the, a, an, and, or";
+
     @JsonAnyGetter
     public Map<String, Object> retrieveRSS(List<String> urls) {
         return this.analyseFeeds(urls);
@@ -88,15 +91,17 @@ public class FeedService {
 
         resetFeedCounter();
 
-        // TODO: clean all the pronouns and adjectives from the final array
+        // filter prepositions and pronouns from the results
+        cleanResults();
 
-        AnalysedFeed f =feedRepository.save(new AnalysedFeed(repeatedWords.toString(), feeds.toString()));
-        System.out.println("Inserted Feed: " + f.getId());
-
+        AnalysedFeed f = feedRepository.save(new AnalysedFeed(String.join(", ", repeatedWords), feeds.toString()));
 
         Map res = new HashMap();
         res.put("Related news in both feeds: ", repeatedWords);
         res.put("link api", "/frequency/" + f.getId());
+
+        // reset service variables
+        cleanArrays();
 
         return res;
     }
@@ -121,5 +126,33 @@ public class FeedService {
 
     private void resetFeedCounter() {
         currentFeed = 0;
+    }
+
+    private void cleanArrays() {
+        feedsList = new ArrayList<List<Feed>>();
+
+        words = new ArrayList<List<String>>();
+
+        allFeedWords = new ArrayList<String>();
+        repeatedWords = new ArrayList<String>();
+    }
+
+    /**
+     * Clean the analysed data from prepositions and pronoums
+     */
+    private void cleanResults() {
+        String words = String.join(",", repeatedWords);
+        System.out.println(words);
+
+        for (String prep : prepositions.split(" ,")) {
+            words = words.replaceAll("\\b"+prep+",\\b", "");
+        }
+
+        for (String pron : pronouns.split(" ,")) {
+            words = words.replaceAll("\\b"+pron+",\\b", "");
+        }
+
+        repeatedWords = Arrays.asList(words.split(","));
+        System.out.println("Cleaned: " + repeatedWords);
     }
 }
