@@ -12,9 +12,12 @@ public class AnalysedFeed {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(unique = true)
+    @Lob
+    @Column(length = 1000)
     private String hotTopics;
 
+    @Lob
+    @Column(length = 500)
     private String rssLinks;
 
     public AnalysedFeed() {
