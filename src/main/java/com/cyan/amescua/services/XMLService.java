@@ -13,7 +13,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,11 +25,9 @@ public class XMLService {
      * This method gets a url for XML feeds and retrieve a list of Feed objects from those XML data.
      * @return List<Feed>
      */
-    public List<Feed> parseFeeds() {
+    public static List<Feed> parseFeeds(String URL) {
 
         List<Feed> feeds = new ArrayList<>();
-
-        String URL = "https://news.google.com/rss?cf=all&hl=en-US&pz=1&gl=US&ceid=US:en";
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
@@ -68,4 +65,6 @@ public class XMLService {
 
         return feeds;
     }
+
+
 }
