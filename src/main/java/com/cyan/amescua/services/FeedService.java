@@ -1,12 +1,13 @@
 package com.cyan.amescua.services;
 
+import com.cyan.amescua.model.AnalysedFeed;
 import com.cyan.amescua.model.Feed;
 import com.cyan.amescua.providers.FeedRepository;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class FeedService {
@@ -23,12 +24,10 @@ public class FeedService {
 
     private static Integer currentFeed = 0;
 
-    public List<String> retrieveRSS(List<String> urls) {
+    @JsonAnyGetter
+    public Map<String, Object> retrieveRSS(List<String> urls) {
         return this.analyseFeeds(urls);
     }
-
-    // method to filter topics using the arrays
-    // MOVE TO FEED SERVICE
 
     /**
      * Retrieve all the words from a feed
@@ -71,7 +70,7 @@ public class FeedService {
      * @param feeds
      * @return the analysed results to the client
      */
-    private List<String> analyseFeeds(List<String> feeds) {
+    private Map<String, Object> analyseFeeds(List<String> feeds) {
         // loop throgh every feed and get the entire parse feed list
         for (String url : feeds) {
             feedsList.add(XMLService.parseFeeds(url));
@@ -89,8 +88,31 @@ public class FeedService {
 
         resetFeedCounter();
 
-        // clean all the pronoms and adjevtives from the final array
-        return repeatedWords;
+        // TODO: clean all the pronouns and adjectives from the final array
+
+        AnalysedFeed f =feedRepository.save(new AnalysedFeed(repeatedWords.toString(), feeds.toString()));
+        System.out.println("Inserted Feed: " + f.getId());
+
+
+        Map res = new HashMap();
+        res.put("Related news in both feeds: ", repeatedWords);
+        res.put("link api", "/frequency/" + f.getId());
+
+        return res;
+    }
+
+    public Map<String, Object> getFeedById(Long id) {
+        Optional<AnalysedFeed> f = feedRepository.findById(id);
+
+        Map<String, Object> res = new HashMap<>();
+
+        if (!f.isPresent()) {
+            res.put("message", "Object Not Found, there is not object matching this ID in the Database.");
+        } else {
+            res.put("AnalysedFeed", f);
+        }
+
+        return res;
     }
 
     private void nextFeed() {

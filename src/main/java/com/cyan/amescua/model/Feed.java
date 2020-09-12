@@ -1,19 +1,14 @@
 package com.cyan.amescua.model;
 
-import javax.persistence.*;
-
-@Entity
+/**
+ * Model to stored the parsed XML feed items and process them.
+ */
 public class Feed {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
 
     private String title;
     private String link;
     private String pubDate;
 
-    @Column(unique = true)
     private String description;
 
     public Feed() {
@@ -30,8 +25,7 @@ public class Feed {
     @Override
     public String toString() {
         return "Feed{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
+                "title='" + title + '\'' +
                 ", link='" + link + '\'' +
                 ", pubDate=" + pubDate +
                 ", description='" + description + '\'' +

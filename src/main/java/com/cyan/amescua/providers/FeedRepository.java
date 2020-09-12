@@ -1,13 +1,9 @@
 package com.cyan.amescua.providers;
 
-import com.cyan.amescua.model.Feed;
+import com.cyan.amescua.model.AnalysedFeed;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
 
-public interface FeedRepository extends CrudRepository<Feed, Long> {
+public interface FeedRepository extends CrudRepository<AnalysedFeed, Long> {
 
-    Feed findById(String id);
-
-    List<Feed> findByDescriptionContaining(String id);
 }
