@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class FeedService {
@@ -21,6 +23,8 @@ public class FeedService {
 
     private List<String> allFeedWords = new ArrayList<String>();
     private List<String> repeatedWords = new ArrayList<String>();
+
+    private HashMap<Integer, Feed> topThreeFeeds = new HashMap<Integer, Feed>();
 
     private static Integer currentFeed = 0;
 
@@ -79,7 +83,7 @@ public class FeedService {
             feedsList.add(XMLService.parseFeeds(url));
         }
 
-        // get words from each feed (TEST)
+        // get words from each feed
         for (List<Feed> feedArray : feedsList) {
             this.words.add(getFeedWords(feedArray));
         }
@@ -91,14 +95,17 @@ public class FeedService {
 
         resetFeedCounter();
 
+        // loop feeds and see which news matches most with the repeated words
+        findTopFeeds();
+
         // filter prepositions and pronouns from the results
         cleanResults();
 
-        AnalysedFeed f = feedRepository.save(new AnalysedFeed(String.join(", ", repeatedWords), feeds.toString()));
+        AnalysedFeed f = feedRepository.save(new AnalysedFeed(String.join(", ", repeatedWords), topThreeFeeds.toString()));
 
         Map res = new HashMap();
         res.put("Related news in both feeds: ", repeatedWords);
-        res.put("link api", "/frequency/" + f.getId());
+        res.put("Results Data: ", "/frequency/" + f.getId());
 
         // reset service variables
         cleanArrays();
@@ -138,6 +145,67 @@ public class FeedService {
     }
 
     /**
+     * It should give you the topest three results feeds (TEST)
+     */
+    private void findTopFeeds() {
+        int count;
+        HashMap<Integer, Feed> helper = new HashMap<Integer, Feed>();
+
+        for (List<Feed> feedList : feedsList) {
+            for (Feed feed : feedList) {
+                count = 0; // reset count
+
+                for (String word : repeatedWords) {
+                    if (isContain(feed.getTitle().toLowerCase(), word)) {
+                        count++;
+                    }
+                }
+
+                if (topThreeFeeds.size() == 0) {
+
+                    topThreeFeeds.put(count, feed);
+
+                } else if (topThreeFeeds.size() == 1) {
+
+                    // take value of the previous one
+                    Integer lastValue = (Integer) topThreeFeeds.keySet().toArray()[topThreeFeeds.size()-1];
+                    // if its bigger we add it
+                    if (lastValue < count) {
+                        topThreeFeeds.put(count, feed);
+                    }
+
+                } else if (topThreeFeeds.size() == 2) {
+                    // take value of the previous one
+                    Integer lastValue = (Integer) topThreeFeeds.keySet().toArray()[topThreeFeeds.size()-1];
+                    // if its bigger we add it
+                    if (lastValue < count) {
+                        topThreeFeeds.put(count, feed);
+                    }
+                } else if (topThreeFeeds.size() == 3) {
+
+                    // take value of the previous one
+                    Integer lastValue = (Integer) topThreeFeeds.keySet().toArray()[topThreeFeeds.size()-1];
+                    // if its bigger we update it
+                    if (lastValue < count) {
+                        // helper variables (take 2 and 3, clean the map, add 2 and 3 as the first ones, add the new one)
+                        helper.put((Integer)topThreeFeeds.keySet().toArray()[0], topThreeFeeds.get(topThreeFeeds.keySet().toArray()[0]));
+                        helper.put((Integer)topThreeFeeds.keySet().toArray()[1], topThreeFeeds.get(topThreeFeeds.keySet().toArray()[1]));
+
+                        topThreeFeeds.clear(); // reset map
+
+                        topThreeFeeds.put((Integer)helper.keySet().toArray()[0], helper.get(helper.keySet().toArray()[0]));
+                        topThreeFeeds.put((Integer)helper.keySet().toArray()[1], helper.get(helper.keySet().toArray()[1]));
+                        topThreeFeeds.put(count, feed); // we add the new bigger value
+
+                        helper.clear();
+                    }
+                }
+            }
+        }
+        System.out.println("Biggest: " + topThreeFeeds);
+    }
+
+    /**
      * Clean the analysed data from prepositions and pronoums
      */
     private void cleanResults() {
@@ -154,5 +222,12 @@ public class FeedService {
 
         repeatedWords = Arrays.asList(words.split(","));
         System.out.println("Cleaned: " + repeatedWords);
+    }
+
+    private static boolean isContain(String source, String subItem){
+        String pattern = "\\b"+subItem+"\\b";
+        Pattern p=Pattern.compile(pattern);
+        Matcher m=p.matcher(source);
+        return m.find();
     }
 }
