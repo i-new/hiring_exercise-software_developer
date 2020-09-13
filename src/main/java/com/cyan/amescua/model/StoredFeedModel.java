@@ -2,6 +2,9 @@ package com.cyan.amescua.model;
 
 import java.util.List;
 
+/**
+ * This model is used to send the Database results as a JSON by the REST API.
+ */
 public class StoredFeedModel {
 
     private Long id;

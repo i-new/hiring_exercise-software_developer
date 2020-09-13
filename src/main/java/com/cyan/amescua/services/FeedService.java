@@ -4,17 +4,13 @@ import com.cyan.amescua.model.AnalysedFeed;
 import com.cyan.amescua.model.Feed;
 import com.cyan.amescua.model.StoredFeedModel;
 import com.cyan.amescua.providers.FeedRepository;
+import com.cyan.amescua.utils.HelperService;
+import com.cyan.amescua.utils.XMLService;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class FeedService {
@@ -59,7 +55,6 @@ public class FeedService {
                 }
             }
         }
-        System.out.println("Words: " + feedWords);
         return feedWords;
     }
 
@@ -106,7 +101,7 @@ public class FeedService {
         // filter prepositions and pronouns from the results
         cleanResults();
 
-        AnalysedFeed f = feedRepository.save(new AnalysedFeed(String.join(", ", repeatedWords), toJson(topThreeFeeds.values())));
+        AnalysedFeed f = feedRepository.save(new AnalysedFeed(String.join(", ", repeatedWords), HelperService.toJson(topThreeFeeds.values())));
 
         Map res = new HashMap();
         res.put("Related news in both feeds: ", repeatedWords);
@@ -127,7 +122,7 @@ public class FeedService {
             res.put("message", "Object Not Found, there is not object matching this ID in the Database.");
         } else {
             AnalysedFeed analysedFeed = f.get();
-            StoredFeedModel model = new StoredFeedModel(analysedFeed.getId(), analysedFeed.getHotTopics(), jsonToList(analysedFeed.getTopFeeds()));
+            StoredFeedModel model = new StoredFeedModel(analysedFeed.getId(), analysedFeed.getHotTopics(), HelperService.jsonToList(analysedFeed.getTopFeeds()));
             res.put("AnalysedFeed", model);
         }
 
@@ -163,7 +158,7 @@ public class FeedService {
                 count = 0; // reset count
 
                 for (String word : repeatedWords) {
-                    if (isContain(feed.getTitle().toLowerCase(), word)) {
+                    if (HelperService.isContain(feed.getTitle().toLowerCase(), word)) {
                         count++;
                     }
                 }
@@ -217,7 +212,6 @@ public class FeedService {
      */
     private void cleanResults() {
         String words = String.join(",", repeatedWords);
-        System.out.println(words);
 
         for (String prep : prepositions.split(" ,")) {
             words = words.replaceAll("\\b"+prep+",\\b", "");
@@ -228,34 +222,5 @@ public class FeedService {
         }
 
         repeatedWords = Arrays.asList(words.split(","));
-        System.out.println("Cleaned: " + repeatedWords);
-    }
-
-    private static boolean isContain(String source, String subItem){
-        String pattern = "\\b"+subItem+"\\b";
-        Pattern p=Pattern.compile(pattern);
-        Matcher m=p.matcher(source);
-        return m.find();
-    }
-
-    private static String toJson(Object o) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            String json = mapper.writeValueAsString(o);
-            System.out.println("ResultingJSONstring = " + json);
-            return json;
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return e.toString();
-        }
-    }
-
-    private static List<Feed> jsonToList(String json) {
-        try {
-            return new ObjectMapper().readValue(json, new TypeReference<List<Feed>>() {});
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 }

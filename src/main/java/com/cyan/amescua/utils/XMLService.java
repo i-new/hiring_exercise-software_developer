@@ -1,7 +1,6 @@
-package com.cyan.amescua.services;
+package com.cyan.amescua.utils;
 
 import com.cyan.amescua.model.Feed;
-import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -18,7 +17,6 @@ import java.util.List;
 /**
  * This service will be used to get xml's API URLs and parse them into a Feed object
  */
-@Service
 public class XMLService {
 
     /**
@@ -64,6 +62,4 @@ public class XMLService {
 
         return feeds;
     }
-
-
 }

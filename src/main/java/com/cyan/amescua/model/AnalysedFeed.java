@@ -3,7 +3,7 @@ package com.cyan.amescua.model;
 import javax.persistence.*;
 
 /**
- * This class will stored the analysed hot topics from RSS feeds in our database.
+ * This class will stored and retrieve the analysed hot topics from RSS feeds in our database.
  */
 @Entity
 public class AnalysedFeed {
