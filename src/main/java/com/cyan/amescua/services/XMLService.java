@@ -49,8 +49,7 @@ public class XMLService {
                     feeds.add(
                             new Feed(elem.getElementsByTagName("title").item(0).getTextContent(),
                             elem.getElementsByTagName("link").item(0).getTextContent(),
-                            elem.getElementsByTagName("pubDate").item(0).getTextContent().toString(),
-                            elem.getElementsByTagName("description").item(0).getTextContent())
+                            elem.getElementsByTagName("pubDate").item(0).getTextContent().toString())
                     );
                 }
             }

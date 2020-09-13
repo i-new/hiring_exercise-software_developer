@@ -18,15 +18,15 @@ public class AnalysedFeed {
 
     @Lob
     @Column(length = 500)
-    private String rssLinks;
+    private String topFeeds;
 
     public AnalysedFeed() {
 
     }
 
-    public AnalysedFeed(String hotTopics, String rssLinks) {
+    public AnalysedFeed(String hotTopics, String topFeeds) {
         this.hotTopics = hotTopics;
-        this.rssLinks = rssLinks;
+        this.topFeeds = topFeeds;
     }
 
     public Long getId() {
@@ -45,12 +45,12 @@ public class AnalysedFeed {
         this.hotTopics = hotTopics;
     }
 
-    public String getRssLinks() {
-        return rssLinks;
+    public String getTopFeeds() {
+        return topFeeds;
     }
 
-    public void setRssLinks(String rssLinks) {
-        this.rssLinks = rssLinks;
+    public void setTopFeeds(String topFeeds) {
+        this.topFeeds = topFeeds;
     }
 
     @Override
@@ -58,7 +58,7 @@ public class AnalysedFeed {
         return "AnalysedFeed{" +
                 "id=" + id +
                 ", hotTopics='" + hotTopics + '\'' +
-                ", rssLinks='" + rssLinks + '\'' +
+                ", rssLinks='" + topFeeds + '\'' +
                 '}';
     }
 }

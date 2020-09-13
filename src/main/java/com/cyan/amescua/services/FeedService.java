@@ -2,8 +2,13 @@ package com.cyan.amescua.services;
 
 import com.cyan.amescua.model.AnalysedFeed;
 import com.cyan.amescua.model.Feed;
+import com.cyan.amescua.model.StoredFeedModel;
 import com.cyan.amescua.providers.FeedRepository;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -101,7 +106,7 @@ public class FeedService {
         // filter prepositions and pronouns from the results
         cleanResults();
 
-        AnalysedFeed f = feedRepository.save(new AnalysedFeed(String.join(", ", repeatedWords), topThreeFeeds.toString()));
+        AnalysedFeed f = feedRepository.save(new AnalysedFeed(String.join(", ", repeatedWords), toJson(topThreeFeeds.values())));
 
         Map res = new HashMap();
         res.put("Related news in both feeds: ", repeatedWords);
@@ -121,7 +126,9 @@ public class FeedService {
         if (!f.isPresent()) {
             res.put("message", "Object Not Found, there is not object matching this ID in the Database.");
         } else {
-            res.put("AnalysedFeed", f);
+            AnalysedFeed analysedFeed = f.get();
+            StoredFeedModel model = new StoredFeedModel(analysedFeed.getId(), analysedFeed.getHotTopics(), jsonToList(analysedFeed.getTopFeeds()));
+            res.put("AnalysedFeed", model);
         }
 
         return res;
@@ -229,5 +236,26 @@ public class FeedService {
         Pattern p=Pattern.compile(pattern);
         Matcher m=p.matcher(source);
         return m.find();
+    }
+
+    private static String toJson(Object o) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String json = mapper.writeValueAsString(o);
+            System.out.println("ResultingJSONstring = " + json);
+            return json;
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return e.toString();
+        }
+    }
+
+    private static List<Feed> jsonToList(String json) {
+        try {
+            return new ObjectMapper().readValue(json, new TypeReference<List<Feed>>() {});
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

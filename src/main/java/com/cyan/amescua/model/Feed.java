@@ -9,17 +9,14 @@ public class Feed {
     private String link;
     private String pubDate;
 
-    private String description;
-
     public Feed() {
 
     }
 
-    public Feed(String title, String link, String pubDate, String description) {
+    public Feed(String title, String link, String pubDate) {
         this.title = title;
         this.link = link;
         this.pubDate = pubDate;
-        this.description = description;
     }
 
     @Override
@@ -28,7 +25,6 @@ public class Feed {
                 "title='" + title + '\'' +
                 ", link='" + link + '\'' +
                 ", pubDate=" + pubDate +
-                ", description='" + description + '\'' +
                 '}';
     }
 
@@ -54,13 +50,5 @@ public class Feed {
 
     public void setPubDate(String pubDate) {
         this.pubDate = pubDate;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 }
