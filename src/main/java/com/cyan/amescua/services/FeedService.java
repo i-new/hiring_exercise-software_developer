@@ -95,11 +95,11 @@ public class FeedService {
 
         resetFeedCounter();
 
-        // loop feeds and see which news matches most with the repeated words
-        findTopFeeds();
-
         // filter prepositions and pronouns from the results
         cleanResults();
+
+        // loop feeds and see which news matches most with the repeated words
+        findTopFeeds();
 
         AnalysedFeed f = feedRepository.save(new AnalysedFeed(String.join(", ", repeatedWords), HelperService.toJson(topThreeFeeds.values())));
 
@@ -144,13 +144,14 @@ public class FeedService {
 
         allFeedWords = new ArrayList<String>();
         repeatedWords = new ArrayList<String>();
+        topThreeFeeds.clear();
     }
 
     /**
      * It should give you the topest three results feeds (TEST)
      */
     private void findTopFeeds() {
-        int count;
+        Integer count;
         HashMap<Integer, Feed> helper = new HashMap<Integer, Feed>();
 
         for (List<Feed> feedList : feedsList) {
@@ -164,7 +165,6 @@ public class FeedService {
                 }
 
                 if (topThreeFeeds.size() == 0) {
-
                     topThreeFeeds.put(count, feed);
 
                 } else if (topThreeFeeds.size() == 1) {
@@ -172,7 +172,7 @@ public class FeedService {
                     // take value of the previous one
                     Integer lastValue = (Integer) topThreeFeeds.keySet().toArray()[topThreeFeeds.size()-1];
                     // if its bigger we add it
-                    if (lastValue < count) {
+                    if (lastValue.compareTo(count) == -1) {
                         topThreeFeeds.put(count, feed);
                     }
 
@@ -180,7 +180,7 @@ public class FeedService {
                     // take value of the previous one
                     Integer lastValue = (Integer) topThreeFeeds.keySet().toArray()[topThreeFeeds.size()-1];
                     // if its bigger we add it
-                    if (lastValue < count) {
+                    if (lastValue.compareTo(count) == -1) {
                         topThreeFeeds.put(count, feed);
                     }
                 } else if (topThreeFeeds.size() == 3) {
@@ -188,10 +188,10 @@ public class FeedService {
                     // take value of the previous one
                     Integer lastValue = (Integer) topThreeFeeds.keySet().toArray()[topThreeFeeds.size()-1];
                     // if its bigger we update it
-                    if (lastValue < count) {
+                    if (lastValue.compareTo(count) == -1) {
                         // helper variables (take 2 and 3, clean the map, add 2 and 3 as the first ones, add the new one)
-                        helper.put((Integer)topThreeFeeds.keySet().toArray()[0], topThreeFeeds.get(topThreeFeeds.keySet().toArray()[0]));
                         helper.put((Integer)topThreeFeeds.keySet().toArray()[1], topThreeFeeds.get(topThreeFeeds.keySet().toArray()[1]));
+                        helper.put((Integer)topThreeFeeds.keySet().toArray()[2], topThreeFeeds.get(topThreeFeeds.keySet().toArray()[2]));
 
                         topThreeFeeds.clear(); // reset map
 
