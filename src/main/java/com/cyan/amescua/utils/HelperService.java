@@ -5,7 +5,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,5 +58,22 @@ public class HelperService {
         Pattern p=Pattern.compile(pattern);
         Matcher m=p.matcher(source);
         return m.find();
+    }
+
+    /**
+     * It parses a given date String to a Date Java object.
+     * @param d
+     * @return
+     */
+    public static Date parseStringToDate(String d) {
+        // Sat, 12 Sep 2020 21:06:08 GMT
+        DateFormat df = new SimpleDateFormat("E,dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
+        try {
+            return df.parse(d);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 }

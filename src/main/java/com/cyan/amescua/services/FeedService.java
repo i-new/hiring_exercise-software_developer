@@ -75,10 +75,10 @@ public class FeedService {
     /**
      * Api that gets feeds and analyse them
      * @param feeds
-     * @return the analysed results to the client
+     * @return the analysed results to the client in JSON format
      */
     private Map<String, Object> analyseFeeds(List<String> feeds) {
-        // loop throgh every feed and get the entire parse feed list
+        // loop through every feed and get the entire parse feed list
         for (String url : feeds) {
             feedsList.add(XMLService.parseFeeds(url));
         }
@@ -100,6 +100,9 @@ public class FeedService {
 
         // loop feeds and see which news matches most with the repeated words
         findTopFeeds();
+
+        // order by date
+        orderFeedsByDates();
 
         AnalysedFeed f = feedRepository.save(new AnalysedFeed(String.join(", ", repeatedWords), HelperService.toJson(topThreeFeeds.values())));
 
@@ -145,6 +148,48 @@ public class FeedService {
         allFeedWords = new ArrayList<String>();
         repeatedWords = new ArrayList<String>();
         topThreeFeeds.clear();
+    }
+
+    /**
+     * Order a feed's list by their publication date
+     */
+    private void orderFeedsByDates() {
+        List<Long> miliSeconds = new ArrayList<Long>();
+        List<Feed> feeds = new ArrayList<Feed>();
+        for (Feed feed : topThreeFeeds.values()) {
+            miliSeconds.add(HelperService.parseStringToDate(feed.getPubDate()).getTime());
+            feeds.add(feed);
+        }
+        if (miliSeconds.get(0) > miliSeconds.get(2)) {
+            Long tmp = miliSeconds.get(0);
+            Long tmp2 = miliSeconds.get(2);
+
+            miliSeconds.set(0, tmp2);
+            miliSeconds.set(2, tmp);
+
+            Feed f1 = feeds.get(0);
+            Feed f2 = feeds.get(2);
+
+            feeds.set(0, f2);
+            feeds.set(2, f1);
+        }
+        if (miliSeconds.get(1) > miliSeconds.get(2)) {
+            Long tmp = miliSeconds.get(1);
+            Long tmp2 = miliSeconds.get(2);
+
+            miliSeconds.set(1, tmp2);
+            miliSeconds.set(2, tmp);
+
+            Feed f1 = feeds.get(1);
+            Feed f2 = feeds.get(2);
+
+            feeds.set(1, f2);
+            feeds.set(2, f1);
+        }
+        topThreeFeeds.clear();
+        topThreeFeeds.put(1, feeds.get(0));
+        topThreeFeeds.put(2, feeds.get(1));
+        topThreeFeeds.put(3, feeds.get(2));
     }
 
     /**
