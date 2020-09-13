@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+/**
+ * This is the main Service of the Feed API, it  communicates between the Controller and the Database repository.
+ */
 @Service
 public class FeedService {
 
@@ -32,6 +35,12 @@ public class FeedService {
     private static String prepositions = "about ,above ,across ,after ,against ,among ,around ,at ,before ,behind ,below ,beside ,between ,by ,down ,during ,for ,from ,in ,inside ,into ,near ,of ,off ,on ,out ,over ,through ,to ,toward ,under ,up ,with";
     private static String pronouns = "I ,me ,we ,us ,you ,her ,him ,it ,it's ,this ,these ,that ,those ,what ,who ,which ,whom ,whose ,my ,your ,yours ,their ,hers ,himself ,herself ,itself ,themselves ,ourselves ,yourself ,yourselves ,anybody ,anyone ,anything ,each  ,either ,everybody ,everyone ,everything ,neither ,nobody ,no one ,nothing ,one ,somebody ,someone ,something ,both ,few ,many ,several ,all ,any ,most ,none ,some ,the, a, an, and, or";
 
+    /**
+     * Returns analysed feeds to the client in JSON format.
+     * This is the main method called from the FeedController
+     * @param urls
+     * @return
+     */
     @JsonAnyGetter
     public Map<String, Object> retrieveRSS(List<String> urls) {
         return this.analyseFeeds(urls);
@@ -51,13 +60,17 @@ public class FeedService {
 
                 if (!feedWords.contains(word)) {
                     feedWords.add(word);
-                    // here as strings (unique)
                 }
             }
         }
         return feedWords;
     }
 
+    /**
+     * This method is used to filter the common words from all the feeds.
+     * It's called in the main method from this service class.
+     * @param feedWords
+     */
     private void filterFeedWords(List<String> feedWords) {
         nextFeed();
 
@@ -75,7 +88,7 @@ public class FeedService {
     /**
      * Api that gets feeds and analyse them
      * @param feeds
-     * @return the analysed results to the client in JSON format
+     * @return the analysed results to the main method of this class
      */
     private Map<String, Object> analyseFeeds(List<String> feeds) {
         // loop through every feed and get the entire parse feed list
@@ -116,6 +129,11 @@ public class FeedService {
         return res;
     }
 
+    /**
+     * Second method used for the API, to find an feeds analysys by id in the database.
+     * @param id
+     * @return
+     */
     public Map<String, Object> getFeedById(Long id) {
         Optional<AnalysedFeed> f = feedRepository.findById(id);
 
@@ -193,7 +211,7 @@ public class FeedService {
     }
 
     /**
-     * It should give you the topest three results feeds (TEST)
+     * It should give you the top three results feeds
      */
     private void findTopFeeds() {
         Integer count;
@@ -212,7 +230,7 @@ public class FeedService {
                 if (topThreeFeeds.size() == 0) {
                     topThreeFeeds.put(count, feed);
 
-                } else if (topThreeFeeds.size() == 1) {
+                } else if (topThreeFeeds.size() == 1 || topThreeFeeds.size() == 2) {
 
                     // take value of the previous one
                     Integer lastValue = (Integer) topThreeFeeds.keySet().toArray()[topThreeFeeds.size()-1];
@@ -221,20 +239,13 @@ public class FeedService {
                         topThreeFeeds.put(count, feed);
                     }
 
-                } else if (topThreeFeeds.size() == 2) {
-                    // take value of the previous one
-                    Integer lastValue = (Integer) topThreeFeeds.keySet().toArray()[topThreeFeeds.size()-1];
-                    // if its bigger we add it
-                    if (lastValue.compareTo(count) == -1) {
-                        topThreeFeeds.put(count, feed);
-                    }
                 } else if (topThreeFeeds.size() == 3) {
 
                     // take value of the previous one
                     Integer lastValue = (Integer) topThreeFeeds.keySet().toArray()[topThreeFeeds.size()-1];
                     // if its bigger we update it
                     if (lastValue.compareTo(count) == -1) {
-                        // helper variables (take 2 and 3, clean the map, add 2 and 3 as the first ones, add the new one)
+                        // helper variables (take the last two ones)
                         helper.put((Integer)topThreeFeeds.keySet().toArray()[1], topThreeFeeds.get(topThreeFeeds.keySet().toArray()[1]));
                         helper.put((Integer)topThreeFeeds.keySet().toArray()[2], topThreeFeeds.get(topThreeFeeds.keySet().toArray()[2]));
 
@@ -253,7 +264,7 @@ public class FeedService {
     }
 
     /**
-     * Clean the analysed data from prepositions and pronoums
+     * Cleans the retrieved common words of all Feeds from prepositions and pronouns
      */
     private void cleanResults() {
         String words = String.join(",", repeatedWords);

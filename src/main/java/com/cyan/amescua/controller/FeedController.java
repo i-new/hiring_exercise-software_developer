@@ -11,6 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * API's class, that listen to the clients and process its requests.
+ * It's composed of two end points, one to get and analyse RSS XML feeds, and other to show the analysed data results.
+ */
 @RestController
 public class FeedController {
 
