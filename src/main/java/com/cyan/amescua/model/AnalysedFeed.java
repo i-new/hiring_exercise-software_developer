@@ -24,6 +24,12 @@ public class AnalysedFeed {
 
     }
 
+    public AnalysedFeed(String hotTopics, String topFeeds, Long id) {
+        this.hotTopics = hotTopics;
+        this.topFeeds = topFeeds;
+        this.id = id;
+    }
+
     public AnalysedFeed(String hotTopics, String topFeeds) {
         this.hotTopics = hotTopics;
         this.topFeeds = topFeeds;
