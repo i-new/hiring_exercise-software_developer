@@ -33,7 +33,7 @@ public class FeedService {
     private static Integer currentFeed = 0;
 
     private static String prepositions = "about ,above ,across ,after ,against ,among ,around ,at ,before ,behind ,below ,beside ,between ,by ,down ,during ,for ,from ,in ,inside ,into ,near ,of ,off ,on ,out ,over ,through ,to ,toward ,under ,up ,with";
-    private static String pronouns = "I ,me ,we ,us ,you ,her ,him ,it ,it's ,this ,these ,that ,those ,what ,who ,which ,whom ,whose ,my ,your ,yours ,their ,hers ,himself ,herself ,itself ,themselves ,ourselves ,yourself ,yourselves ,anybody ,anyone ,anything ,each  ,either ,everybody ,everyone ,everything ,neither ,nobody ,no one ,nothing ,one ,somebody ,someone ,something ,both ,few ,many ,several ,all ,any ,most ,none ,some ,the, a, an, and, or";
+    private static String pronouns = "I ,me ,we ,us ,you ,her ,him ,it ,it's ,this ,these ,that ,those ,what ,who ,which ,whom ,whose ,my ,your ,yours ,their ,hers ,himself ,herself ,itself ,themselves ,ourselves ,yourself ,yourselves ,anybody ,anyone ,anything ,each  ,either ,everybody ,everyone ,everything ,neither ,nobody ,no one ,nothing ,one ,somebody ,someone ,something ,both ,few ,many ,several ,all ,any ,most ,none ,some ,the ,a ,an ,and ,or";
 
     /**
      * Returns analysed feeds to the client in JSON format.
@@ -173,41 +173,18 @@ public class FeedService {
      */
     private void orderFeedsByDates() {
         List<Long> miliSeconds = new ArrayList<Long>();
-        List<Feed> feeds = new ArrayList<Feed>();
+        HashMap<Long, Feed> feeds = new HashMap<>();
         for (Feed feed : topThreeFeeds.values()) {
             miliSeconds.add(HelperService.parseStringToDate(feed.getPubDate()).getTime());
-            feeds.add(feed);
+            feeds.put(HelperService.parseStringToDate(feed.getPubDate()).getTime(), feed);
         }
-        if (miliSeconds.get(0) > miliSeconds.get(2)) {
-            Long tmp = miliSeconds.get(0);
-            Long tmp2 = miliSeconds.get(2);
+        // order milliseconds
+        miliSeconds.sort(Comparator.naturalOrder());
 
-            miliSeconds.set(0, tmp2);
-            miliSeconds.set(2, tmp);
-
-            Feed f1 = feeds.get(0);
-            Feed f2 = feeds.get(2);
-
-            feeds.set(0, f2);
-            feeds.set(2, f1);
-        }
-        if (miliSeconds.get(1) > miliSeconds.get(2)) {
-            Long tmp = miliSeconds.get(1);
-            Long tmp2 = miliSeconds.get(2);
-
-            miliSeconds.set(1, tmp2);
-            miliSeconds.set(2, tmp);
-
-            Feed f1 = feeds.get(1);
-            Feed f2 = feeds.get(2);
-
-            feeds.set(1, f2);
-            feeds.set(2, f1);
-        }
         topThreeFeeds.clear();
-        topThreeFeeds.put(1, feeds.get(0));
-        topThreeFeeds.put(2, feeds.get(1));
-        topThreeFeeds.put(3, feeds.get(2));
+        for (int i = 0; i < miliSeconds.size(); i++) {
+            topThreeFeeds.put(i, feeds.get(miliSeconds.get(i)));
+        }
     }
 
     /**
@@ -230,32 +207,28 @@ public class FeedService {
                 if (topThreeFeeds.size() == 0) {
                     topThreeFeeds.put(count, feed);
 
-                } else if (topThreeFeeds.size() == 1 || topThreeFeeds.size() == 2) {
-
+                } else {
                     // take value of the previous one
                     Integer lastValue = (Integer) topThreeFeeds.keySet().toArray()[topThreeFeeds.size()-1];
                     // if its bigger we add it
                     if (lastValue.compareTo(count) == -1) {
-                        topThreeFeeds.put(count, feed);
-                    }
 
-                } else if (topThreeFeeds.size() == 3) {
+                        if (topThreeFeeds.size() == 1 || topThreeFeeds.size() == 2) {
+                            topThreeFeeds.put(count, feed);
 
-                    // take value of the previous one
-                    Integer lastValue = (Integer) topThreeFeeds.keySet().toArray()[topThreeFeeds.size()-1];
-                    // if its bigger we update it
-                    if (lastValue.compareTo(count) == -1) {
-                        // helper variables (take the last two ones)
-                        helper.put((Integer)topThreeFeeds.keySet().toArray()[1], topThreeFeeds.get(topThreeFeeds.keySet().toArray()[1]));
-                        helper.put((Integer)topThreeFeeds.keySet().toArray()[2], topThreeFeeds.get(topThreeFeeds.keySet().toArray()[2]));
+                        } else if (topThreeFeeds.size() == 3) {
+                            // helper variables (take the last two ones)
+                            helper.put((Integer)topThreeFeeds.keySet().toArray()[1], topThreeFeeds.get(topThreeFeeds.keySet().toArray()[1]));
+                            helper.put((Integer)topThreeFeeds.keySet().toArray()[2], topThreeFeeds.get(topThreeFeeds.keySet().toArray()[2]));
 
-                        topThreeFeeds.clear(); // reset map
+                            topThreeFeeds.clear(); // reset map
 
-                        topThreeFeeds.put((Integer)helper.keySet().toArray()[0], helper.get(helper.keySet().toArray()[0]));
-                        topThreeFeeds.put((Integer)helper.keySet().toArray()[1], helper.get(helper.keySet().toArray()[1]));
-                        topThreeFeeds.put(count, feed); // we add the new bigger value
+                            topThreeFeeds.put((Integer)helper.keySet().toArray()[0], helper.get(helper.keySet().toArray()[0]));
+                            topThreeFeeds.put((Integer)helper.keySet().toArray()[1], helper.get(helper.keySet().toArray()[1]));
+                            topThreeFeeds.put(count, feed); // we add the new bigger value
 
-                        helper.clear();
+                            helper.clear();
+                        }
                     }
                 }
             }
