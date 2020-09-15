@@ -24,13 +24,9 @@ public class FeedService {
     private List<List<Feed>> feedsList = new ArrayList<List<Feed>>();
 
     private List<List<String>> words = new ArrayList<List<String>>();
-
-    private List<String> allFeedWords = new ArrayList<String>();
     private List<String> repeatedWords = new ArrayList<String>();
 
     private HashMap<Integer, Feed> topThreeFeeds = new HashMap<Integer, Feed>();
-
-    private static Integer currentFeed = 0;
 
     private static String prepositions = "about ,above ,across ,after ,against ,among ,around ,at ,before ,behind ,below ,beside ,between ,by ,down ,during ,for ,from ,in ,inside ,into ,near ,of ,off ,on ,out ,over ,through ,to ,toward ,under ,up ,with";
     private static String pronouns = "I ,me ,we ,us ,you ,her ,him ,it ,it's ,this ,these ,that ,those ,what ,who ,which ,whom ,whose ,my ,your ,yours ,their ,hers ,himself ,herself ,itself ,themselves ,ourselves ,yourself ,yourselves ,anybody ,anyone ,anything ,each  ,either ,everybody ,everyone ,everything ,neither ,nobody ,no one ,nothing ,one ,somebody ,someone ,something ,both ,few ,many ,several ,all ,any ,most ,none ,some ,the ,a ,an ,and ,or";
@@ -98,14 +94,10 @@ public class FeedService {
      */
     private Map<String, Object> analyseFeeds(List<String> feeds) {
         // loop through every feed and get the entire parse feed list
-        for (String url : feeds) {
-            feedsList.add(XMLService.parseFeeds(url));
-        }
+        feeds.forEach(url -> feedsList.add(XMLService.parseFeeds(url)));
 
         // get words from each feed
-        for (List<Feed> feedArray : feedsList) {
-            this.words.add(getFeedWords(feedArray));
-        }
+        feedsList.forEach(feedArray -> this.words.add(getFeedWords(feedArray)));
 
         // filter feeds
         int current = 0;
@@ -113,8 +105,6 @@ public class FeedService {
             filterFeedWords(words, current);
             current++;
         }
-
-        resetFeedCounter();
 
         // filter prepositions and pronouns from the results
         cleanResults();
@@ -158,20 +148,11 @@ public class FeedService {
         return res;
     }
 
-    private void nextFeed() {
-        currentFeed++;
-    }
-
-    private void resetFeedCounter() {
-        currentFeed = 0;
-    }
-
     private void cleanArrays() {
         feedsList = new ArrayList<List<Feed>>();
 
         words = new ArrayList<List<String>>();
 
-        allFeedWords = new ArrayList<String>();
         repeatedWords = new ArrayList<String>();
         topThreeFeeds.clear();
     }

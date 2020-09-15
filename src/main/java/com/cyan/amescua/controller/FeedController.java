@@ -1,12 +1,14 @@
 package com.cyan.amescua.controller;
 
 import com.cyan.amescua.services.FeedService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +36,7 @@ public class FeedController {
         }
 
         List<String> urls = new ArrayList<>();
-        for (Object url : allUrls.values().toArray()) {
-            urls.add(url.toString());
-        }
+        allUrls.values().forEach(url -> urls.add(url));
 
         Map<String, Object> res = feedService.retrieveRSS(urls);
 

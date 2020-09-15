@@ -14,6 +14,9 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Helper class to help with parsing text operations (Date, JSON, String)
+ */
 public class HelperService {
 
     /**
