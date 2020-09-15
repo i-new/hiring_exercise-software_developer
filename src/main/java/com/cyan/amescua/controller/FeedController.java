@@ -1,6 +1,7 @@
 package com.cyan.amescua.controller;
 
 import com.cyan.amescua.services.FeedService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,15 +24,19 @@ public class FeedController {
 
     /**
      * Will return a list of /frequency/{id} endpoints for each given url
-     * @param url1
-     * @param url2
+     * @param allUrls
      * @return a response with the common hot topics matches and the id path to retrieve the analyse data "/frequency/{id}"
      */
     @GetMapping(value = "/analyse/new", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity retrieveRSS(@RequestParam(required = true) String url1, @RequestParam(required = true) String url2) {
+    public ResponseEntity retrieveRSS(@RequestParam Map<String, String> allUrls) {
+        if (allUrls.values().toArray().length < 2) {
+            return new ResponseEntity("You must send minimal 2 urls to process", HttpStatus.NOT_ACCEPTABLE);
+        }
+
         List<String> urls = new ArrayList<>();
-        urls.add(url1);
-        urls.add(url2);
+        for (Object url : allUrls.values().toArray()) {
+            urls.add(url.toString());
+        }
 
         Map<String, Object> res = feedService.retrieveRSS(urls);
 

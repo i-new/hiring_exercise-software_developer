@@ -71,16 +71,22 @@ public class FeedService {
      * It's called in the main method from this service class.
      * @param feedWords
      */
-    private void filterFeedWords(List<String> feedWords) {
-        nextFeed();
+    private void filterFeedWords(List<String> feedWords, int currentPos) {
+        int controller;
+        for (String word : feedWords) {
+            controller = 0;
+            for (int i = 0; i < this.words.size(); i++) {
+                if (i == currentPos) {
+                    continue;
+                }
 
-        for (String fw : feedWords) {
-
-            if (!this.allFeedWords.contains(fw)) {
-                this.allFeedWords.add(fw);
-
-            } else if (!this.repeatedWords.contains(fw) && currentFeed == 2) {
-                this.repeatedWords.add(fw);
+                List<String> l = this.words.get(i);
+                if (l.contains(word)) {
+                    controller++;
+                }
+            }
+            if (!this.repeatedWords.contains(word) && controller == this.words.size()-1) {
+                this.repeatedWords.add(word);
             }
         }
     }
@@ -102,8 +108,10 @@ public class FeedService {
         }
 
         // filter feeds
+        int current = 0;
         for (List<String> words : this.words) {
-            filterFeedWords(words);
+            filterFeedWords(words, current);
+            current++;
         }
 
         resetFeedCounter();
@@ -120,7 +128,7 @@ public class FeedService {
         AnalysedFeed f = feedRepository.save(new AnalysedFeed(String.join(", ", repeatedWords), HelperService.toJson(topThreeFeeds.values())));
 
         Map res = new HashMap();
-        res.put("Related news in both feeds: ", repeatedWords);
+        res.put("Related news in all the feeds: ", repeatedWords);
         res.put("Results Data: ", "/frequency/" + f.getId());
 
         // reset service variables
