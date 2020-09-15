@@ -212,20 +212,22 @@ public class FeedService {
                     }
                 }
 
-                if (topThreeFeeds.size() == 0) {
+                if (topThreeFeeds.size() == 0 && count > 0) {
+
                     topThreeFeeds.put(count, feed);
 
                 } else {
-                    // take value of the previous one
-                    Integer lastValue = (Integer) topThreeFeeds.keySet().toArray()[topThreeFeeds.size()-1];
-                    // if its bigger we add it
-                    if (lastValue.compareTo(count) == -1) {
+                    // if is less than 3, but count > 0, add + order
+                    if (topThreeFeeds.size() <  3 && count > 0) {
+                        topThreeFeeds.put(count, feed);
+                        sortFeeds();
 
-                        if (topThreeFeeds.size() == 1 || topThreeFeeds.size() == 2) {
-                            topThreeFeeds.put(count, feed);
+                    // if is 3 already, check that new one is bigger than last one
+                    } else if (topThreeFeeds.size() == 3 && count > 0) {
+                        Integer lastValue = (Integer) topThreeFeeds.keySet().toArray()[topThreeFeeds.size()-1];
 
-                        } else if (topThreeFeeds.size() == 3) {
-                            // helper variables (take the last two ones)
+                        if (lastValue < count) {
+                            // helper variables (take 2 and 3, clean the map, add 2 and 3 as the first ones, add the new one)
                             helper.put((Integer)topThreeFeeds.keySet().toArray()[1], topThreeFeeds.get(topThreeFeeds.keySet().toArray()[1]));
                             helper.put((Integer)topThreeFeeds.keySet().toArray()[2], topThreeFeeds.get(topThreeFeeds.keySet().toArray()[2]));
 
@@ -242,6 +244,21 @@ public class FeedService {
             }
         }
         System.out.println("Biggest: " + topThreeFeeds);
+    }
+
+    private void sortFeeds() {
+        List<Integer> values = new ArrayList<Integer>();
+        topThreeFeeds.keySet().forEach(key -> values.add(key));
+
+        values.sort(Comparator.naturalOrder());
+
+        HashMap<Integer, Feed> helper = new HashMap<Integer, Feed>();
+        for (int i = 0 ; i < values.size(); i++) {
+            helper.put((Integer)topThreeFeeds.keySet().toArray()[i], topThreeFeeds.get(topThreeFeeds.keySet().toArray()[i]));
+        }
+
+        topThreeFeeds.clear();
+        topThreeFeeds = new HashMap<Integer, Feed>(helper);
     }
 
     /**
