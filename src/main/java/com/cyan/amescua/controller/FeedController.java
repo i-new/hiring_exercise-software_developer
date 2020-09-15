@@ -32,7 +32,7 @@ public class FeedController {
     @GetMapping(value = "/analyse/new", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity retrieveRSS(@RequestParam Map<String, String> allUrls) {
         if (allUrls.values().toArray().length < 2) {
-            return new ResponseEntity("You must send minimal 2 urls to process", HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity("You must send minimum two urls to process", HttpStatus.NOT_ACCEPTABLE);
         }
 
         List<String> urls = new ArrayList<>();

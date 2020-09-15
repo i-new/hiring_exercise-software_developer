@@ -115,9 +115,19 @@ public class FeedService {
         // order by date
         orderFeedsByDates();
 
+        Map<String, Object> res = new HashMap<String, Object>();
+
+        // if there are not common topics we return the feedback to the user.
+        if (repeatedWords.size() == 0) {
+            res.put("Message", "There are not matching topics in these feeds");
+            cleanArrays(); // reset service variables
+            return res;
+        }
+
+        // if there are topics, we proceed
         AnalysedFeed f = feedRepository.save(new AnalysedFeed(String.join(", ", repeatedWords), HelperService.toJson(topThreeFeeds.values())));
 
-        Map res = new HashMap();
+
         res.put("Related news in all the feeds: ", repeatedWords);
         res.put("Results Data: ", "/frequency/" + f.getId());
 
