@@ -31,12 +31,21 @@ class FeedControllerTest {
     private FeedService feedService;
 
     @Test
-    void retrieveRSS() throws Exception {
+    void should_Retrieve_RSS_and_then_sayOk() throws Exception {
         mockMvc.perform(get("/analyse/new")
             .contentType("application/json")
             .param("url1", "https://news.google.com/rss?cf=all&hl=en-US&pz=1&gl=US&ceid=US:en")
-            .param("url2", "https://www.api.org/news-policy-and-issues/news-feed"))
+            .param("url2", "https://www.api.org/news-policy-and-issues/news-feed")
+            .param("url3", "http://feeds.bbci.co.uk/news/rss.xml"))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    void should_Retrieve_RSS_and_then_sayNotAcceptable() throws Exception {
+        mockMvc.perform(get("/analyse/new")
+                .contentType("application/json")
+                .param("url1", "https://news.google.com/rss?cf=all&hl=en-US&pz=1&gl=US&ceid=US:en"))
+                .andExpect(status().isNotAcceptable());
     }
 
     @Test

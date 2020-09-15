@@ -16,7 +16,7 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-public class FeedEntityRepositoryTest {
+public class FeedRepositoryTest {
 
     @Autowired
     FeedRepository feedRepository;
