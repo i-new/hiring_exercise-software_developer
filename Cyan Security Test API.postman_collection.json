@@ -1,0 +1,49 @@
+{
+	"info": {
+		"_postman_id": "60c0ab21-255f-42ad-b929-9de2f2fb6d47",
+		"name": "Cyan Security Test API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "API Test Case (XML URLs parser)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/analyse/new?url1=https://news.google.com/rss?cf=all%26hl=en-US%26pz=1%26gl=US%26ceid=US:en&url2=https://www.api.org/news-policy-and-issues/news-feed&url3=http://feeds.bbci.co.uk/news/rss.xml",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"analyse",
+						"new"
+					],
+					"query": [
+						{
+							"key": "url1",
+							"value": "https://news.google.com/rss?cf=all%26hl=en-US%26pz=1%26gl=US%26ceid=US:en"
+						},
+						{
+							"key": "url2",
+							"value": "https://www.api.org/news-policy-and-issues/news-feed"
+						},
+						{
+							"key": "url3",
+							"value": "http://feeds.bbci.co.uk/news/rss.xml"
+						},
+						{
+							"key": "url4",
+							"value": "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
