@@ -57,7 +57,7 @@ Returns the three elements with the most matches, additinally the orignal news h
 
 ### Workflow:
 
-When this API is being called, you will read the analysis data stored in the database by using the given id parameter
+When this API is being called, you will read the analysis data stored in the database by using the given id parameter.
 Return the top three results as a json object ordered by their frequency of occurrence
 
 ## Additional Information
